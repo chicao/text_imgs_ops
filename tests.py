@@ -1,17 +1,36 @@
 import unittest as ut
+from letters_valued_image import (initialize_matrix,
+                                 clear_matrix)
 
 class TestUserCommands(ut.TestCase):
     def setUp(self):
-        pass
+
+        self.empty_img = [['O','O','O','O'],
+                          ['O','O','O','O'],
+                          ['O','O','O','O'],
+                          ['O','O','O','O'],
+                          ['O','O','O','O']]
+
+        self.filled_img = [['A','Q','E','O'],
+                           ['Z','A','G','I'],
+                           ['O','B','G','E'],
+                           ['Q','Q','Z','E'],
+                           ['Q','T','P','R']]
+
+        self.cols = 5
+        self.rows = 4
 
     def tearDown(self):
         pass
 
     def test_initialize_matrix(self):
-        pass
+        init = initialize_matrix(self.cols, self.rows)
+        self.assertTrue(init == self.empty_img)
 
     def test_clear_matrix(self):
-        pass
+        self.assertTrue(self.empty_img != self.filled_img)
+        clear_matrix(self.filled_img)
+        self.assertTrue(self.empty_img == self.filled_img)
 
     def test_lay_value_at(self):
         pass
