@@ -117,6 +117,9 @@ def check_horizontal_bounds(matrix, col):
         return False
 
     bound = len(matrix)
+    if col < 0:
+        return False
+
     return col < bound
 
 
@@ -125,6 +128,8 @@ def check_vertical_bounds(matrix, row):
         return False
 
     bound = len(matrix[0])
+    if row < 0:
+        return False
     return row < bound
 
 
@@ -147,7 +152,7 @@ def matrix_2_str(matrix):
     return ''.join(output)
 
 
-def print_help(initial=False):
+def print_guide(initial=False):
 
     header = ("------------------- TEXT IMAGE COMMANDS -------------------\n"
         )
@@ -155,8 +160,8 @@ def print_help(initial=False):
     message = ("-----------------------------------------------------------\n\n"
                " Create a text document as emulation of 2D images\n\n"
                " Usage:\n\n"
-               " H:\n"
-               "      Prints this help message\n\n"
+               " G:\n"
+               "      Prints this guide message\n\n"
                " I M N:\n"
                "      Initialize an empty ('O') MxN ( colsXrows ) image\n\n"
                " C:\n"
@@ -191,7 +196,7 @@ def print_help(initial=False):
 
 def handle_user_input(user_input):
 
-    valid_commands = ['H', 'X', 'P', 'I', 'C', 'L', 'V', 'H', 'K', 'F', 'S']
+    valid_commands = ['G', 'X', 'P', 'I', 'C', 'L', 'V', 'H', 'K', 'F', 'S']
     command = user_input.split()
 
     if not command:
@@ -208,8 +213,8 @@ def handle_user_input(user_input):
         print(matrix_2_str(image))
         return
 
-    if command[0] == 'H':
-        print_help()
+    if command[0] == 'G':
+        print_guide()
 
     if command[0] == 'X':
         print("Goodbye :'( ")
@@ -259,6 +264,65 @@ def handle_user_input(user_input):
             print_error('value')
             return
 
+    if command[0] == 'V':
+
+        if len(command) != 5:
+            print_error('syntax')
+            return
+
+        try:
+            col = int(command[1]) - 1
+            row_upper = int(command[2]) - 1
+            row_lower = int(command[3]) - 1
+
+            if not check_vertical_bounds(image, row_upper):
+                print_error('bounds')
+
+            if not check_vertical_bounds(image, row_lower):
+                print_error('bounds')
+
+            if not check_horizontal_bounds(image, col):
+                print_error('bounds')
+
+            if row_upper > row_lower:
+                print_error('interval')
+
+            value = command[4]
+            vertical_values(image, col, row_upper, row_lower, value)
+
+        except ValueError as e:
+            print_error('value')
+            return
+
+    if command[0] == 'H':
+
+        if len(command) != 5:
+            print_error('syntax')
+            return
+
+        try:
+            col_left = int(command[1]) - 1
+            col_right = int(command[2]) - 1
+            row = int(command[3]) - 1
+
+            if not check_horizontal_bounds(image, col_left):
+                print_error('bounds')
+
+            if not check_horizontal_bounds(image, col_right):
+                print_error('bounds')
+
+            if not check_vertical_bounds(image, row):
+                print_error('bounds')
+
+            if col_left > col_right:
+                print_error('interval')
+
+            value = command[4]
+            horizontal_values(image, col_left, col_right, row, value)
+
+        except ValueError as e:
+            print_error('value')
+            return
 
 def print_error(error_type):
     error = "----------------------    ERROR    -------------------------\n"
@@ -281,10 +345,16 @@ def print_error(error_type):
                    " >     The commands require integer values for image\n"
                    " >     positions that are with the image size\n")
 
+    elif error_type == 'interval':
+        error +=  (" > INVALID IMAGE POSITION INTERVAL"
+                   " >     The commands require integer values for image\n"
+                   " >     positions that required that the first is greater\n"
+                   " >     than the second\n")
+
     else:
         error += (" >  AN ERROR OCCURRED\n"
                   " >       Please, keep in mind to use the\n"
-                  "> designated commands\n")
+                  " >       designated commands\n")
 
     error += "------------------------------------------------------------\n\n"
 
@@ -292,10 +362,10 @@ def print_error(error_type):
 
 
 def event_loop():
-    print_help(initial=True)
+    print_guide(initial=True)
 
     while True:
-        user_input = input("(for help press 'H')> ")
+        user_input = input("(press 'G' for guidance)> ")
         handle_user_input(user_input)
 
 
