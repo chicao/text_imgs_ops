@@ -134,8 +134,10 @@ def check_vertical_bounds(matrix, row):
 
 
 def save_matrix(matrix, filename):
-    pass
+    with open(filename, 'w') as f:
+        f.write(matrix_2_str(matrix))
 
+    return
 
 def matrix_2_str(matrix):
     if not matrix:
@@ -355,6 +357,47 @@ def handle_user_input(user_input):
             print_error('value')
             return
 
+    if command[0] == 'F':
+
+        if len(command) != 4:
+            print_error('syntax')
+            return
+
+        try:
+            col = int(command[1]) - 1
+            row = int(command[2]) - 1
+            value = command[3]
+
+            if not check_bounds(image, col, row):
+                print_error('bounds')
+
+            fill_region(image, col, row, value)
+
+        except ValueError as e:
+            print_error('value')
+            return
+
+    if command[0] == 'S':
+
+        if len(command) != 2:
+            print_error('syntax')
+            return
+
+        if "'" not in command[1]:
+            print_error('syntax')
+            return
+
+        if command[1].count("'") != 2:
+            print_error('syntax')
+            return
+
+        if len(command[1]) < 3:
+            print_error('filename')
+            return
+
+        filename = command[1].strip("'")
+        save_matrix(image, filename)
+
 
 def print_error(error_type):
     error = "----------------------    ERROR    -------------------------\n"
@@ -382,6 +425,11 @@ def print_error(error_type):
                    " >     The commands require integer values for image\n"
                    " >     positions that required that the first is greater\n"
                    " >     than the second\n")
+
+    elif error_type == 'filename':
+        error +=  (" > INVALID FILENAME FORMAT"
+                   " >     To save a file properly, input a file name with\n"
+                   " >     at least 3 letters\n")
 
     else:
         error += (" >  AN ERROR OCCURRED\n"
