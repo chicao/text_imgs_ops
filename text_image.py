@@ -94,6 +94,32 @@ def fill_region(matrix, col, row, value):
         fill_region(matrix, col, row+1, value)
 
 
+def check_bounds(matrix, col, row):
+    if not check_horizontal_bounds(matrix, col):
+        return False
+
+    if not check_vertical_bounds(matrix, row):
+        return False
+
+    return True
+
+
+def check_horizontal_bounds(matrix, col):
+    if not len(matrix):
+        return False
+
+    bound = len(matrix)
+    return col < bound
+
+
+def check_vertical_bounds(matrix, row):
+    if not len(matrix):
+        return False
+
+    bound = len(matrix[0])
+    return row < bound
+
+
 def save_matrix(matrix, filename):
     pass
 
