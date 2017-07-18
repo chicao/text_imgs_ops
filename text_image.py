@@ -2,7 +2,7 @@
 # -*- coding: utf8 -*-
 """ MODULE LEVEL DOCSTRING: WRITE SOMETHING HERE LATER
 """
-
+import sys
 
 def initialize_matrix(cols, rows):
     return [['O']*rows]*cols
@@ -136,45 +136,86 @@ def matrix_2_str(matrix):
     return ''.join(output)
 
 
+def print_help(initial=False):
+
+    header = ("------------------- TEXT IMAGE COMMANDS -------------------\n"
+        )
+
+    message = ("-----------------------------------------------------------\n\n"
+               " Create a text document as emulation of 2D images\n\n"
+               " Usage:\n\n"
+               " H:\n"
+               "      Prints this help message\n\n"
+               " I M N:\n"
+               "      Initialize an empty ('O') MxN ( colsXrows ) image\n\n"
+               " C:\n"
+               "      Sets the current matrix values to zero\n\n"
+               " L X Y C:\n"
+               "      Set matrix position (X,Y) with value C\n\n"
+               " V X Y1 Y2 C:\n"
+               "      Sets matrix positions (X, Y1-Y2) with value C\n\n"
+               " H X X1 Y2 C:\n"
+               "      Sets matrix positions (X1-X2, Y) with value C\n\n"
+               " K X1 Y1 X2 Y2 C:\n"
+               "      Sets a rectangular region, with bounds (X1,Y1) for\n"
+               "      top-left corner and (X2,Y2) to bottom-right corner\n\n"
+               " F X Y C:\n"
+               "      Fills a region with value C. A region is defined by the\n"
+               "      X,Y position with value C and neighbor zero valued (O)\n"
+               "      positions, both horizontaly and verticaly.\n\n"
+               " S 'filename':\n"
+               "      Saves the matrix to a file with name 'filename'\n\n"
+               " X:\n"
+               "      Exits the program\n\n"
+               "-----------------------------------------------------------\n\n"
+        )
+
+    if initial:
+        message = header + message
+
+    print(message)
+
+
+def handle_user_input(user_input):
+
+    valid_commands = ['H', 'X', 'I', 'C', 'L', 'V', 'H', 'K', 'F', 'S']
+    command = user_input.split()
+
+    if not command:
+        print('Please, insert a valid command')
+        return
+
+    if command[0] not in valid_commands:
+        print_syntax_error()
+        return
+
+    if command[0] == 'H':
+        print_help()
+
+    if command[0] == 'X':
+        print("Goodbye :'( ")
+        sys.exit(0)
+
+
+def print_syntax_error():
+    error = (
+        "----------------------    ERROR    -------------------------\n"
+        " >  INVALID COMMAND SYNTAX\n"
+        "------------------------------------------------------------\n\n"
+        )
+    print(error)
+
+
 def event_loop():
-    """ Function that handles the user input
+    print_help(initial=True)
 
-    This project will receive a series of user inputs regarding the creation,
-    filling and manipulation of simple bidimentional matrices. This function
-    takes care of checking the validity of user input, provide feeback for
-    invalid values and calling the due functions for each command.
-
-    Commands:
-        I M N:      Initialize an empty (zero-valued) MxN ( colsXrows ) matrix.
-                    Here, the value zero is defined by the letter O not the
-                    number 0. Also, be aware that this command does not follow
-                    the common matrices dimension convention, which is rowsXcols
-
-        C:          Sets the current matrix values to zero
-
-        L X Y C:    Set matrix position (X,Y) with value C
-
-        V X Y1 Y2 C:Sets matrix positions (X, Y1-Y2) with value C
-
-        H X X1 Y2 C:Sets matrix positions (X1-X2, Y) with value C
-
-        K X1 Y1 X2 Y2 C : Sets a rectangular region, with bounds (X1,Y1) for
-                          top-left corner and (X2,Y2) to bottom-right corner
-
-        F X Y C : Fills a region with value C. A region is defined by the X,Y
-                  position with value C and neighbor zero valued (O) positions,
-                  both horizontaly and verticaly.
-
-        S filename: Saves the matrix to a file with name "filename"
-
-        X : Exits the program
-
-    """
-    pass
+    while True:
+        user_input = input("(for help press 'H')> ")
+        handle_user_input(user_input)
 
 
 def main():
-    pass
+    event_loop()
 
 
 if __name__ == '__main__':
