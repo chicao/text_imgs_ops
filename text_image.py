@@ -7,12 +7,15 @@ import sys
 image = []
 
 def initialize_matrix(cols, rows):
-    return [['O']*rows]*cols
+    init = []
+    for _ in range(cols):
+        row = ['O' for _ in range(rows)]
+        init.append(row)
+
+    return init
 
 
 def clear_matrix(matrix):
-    if not matrix:
-        return
 
     for col in matrix:
         for pos in range(len(col)):
@@ -196,13 +199,14 @@ def handle_user_input(user_input):
         return
 
     if command[0] not in valid_commands:
-        print_syntax_error()
+        print_error('syntax')
         return
 
     global image
 
     if command[0] == 'P':
         print(matrix_2_str(image))
+        return
 
     if command[0] == 'H':
         print_help()
@@ -210,10 +214,6 @@ def handle_user_input(user_input):
     if command[0] == 'X':
         print("Goodbye :'( ")
         sys.exit(0)
-
-    if command[0] == 'C':
-        if not image:
-            print_error('empty')
 
     if command[0] == 'I':
 
@@ -225,20 +225,47 @@ def handle_user_input(user_input):
             cols = int(command[1])
             rows = int(command[2])
             image = initialize_matrix(cols, rows)
-            print(matrix_2_str(image))
 
         except ValueError as e:
             print_error('value')
             return
 
+    if not image:
+        print_error('empty')
         return
+
+    if command[0] == 'C':
+        clear_matrix(image)
+
+
+    if command[0] == 'L':
+
+        if len(command) != 4:
+            print_error('syntax')
+            return
+
+        try:
+            col = int(command[1]) - 1
+            row = int(command[2]) - 1
+
+            if not check_bounds(image, col, row):
+                print_error('bounds')
+
+            value = command[3]
+            lay_value_at(image, col, row, value)
+
+
+        except ValueError as e:
+            print_error('value')
+            return
 
 
 def print_error(error_type):
     error = "----------------------    ERROR    -------------------------\n"
 
     if error_type == 'syntax':
-        error += " >  INVALID COMMAND SYNTAX\n"
+        error += (" >  INVALID COMMAND SYNTAX\n"
+                  " >     This command requires arguments to proceed\n")
 
     elif error_type == 'empty':
         error +=  (" >  UNITIALIZED IMAGE\n"
@@ -248,6 +275,11 @@ def print_error(error_type):
         error +=  (" > INVALID COMMAND INPUT"
                    " >     The commands require integer values for image\n"
                    " >     dimensions input\n")
+
+    elif error_type == 'bounds':
+        error +=  (" > INVALID IMAGE BOUNDS"
+                   " >     The commands require integer values for image\n"
+                   " >     positions that are with the image size\n")
 
     else:
         error += (" >  AN ERROR OCCURRED\n"
