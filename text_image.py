@@ -324,6 +324,38 @@ def handle_user_input(user_input):
             print_error('value')
             return
 
+    if command[0] == 'K':
+
+        if len(command) != 6:
+            print_error('syntax')
+            return
+
+        try:
+            col_top = int(command[1]) - 1
+            row_top = int(command[2]) - 1
+            col_bottom = int(command[3]) - 1
+            row_bottom = int(command[4]) - 1
+            value = command[5]
+
+            if not check_bounds(image, col_top, row_top):
+                print_error('bounds')
+
+            if not check_bounds(image, col_bottom, row_bottom):
+                print_error('bounds')
+
+            if col_top > col_bottom:
+                print_error('interval')
+
+            if row_top > row_bottom:
+                print_error('interval')
+
+            key_in_rect(image, col_top, row_top, col_bottom, row_bottom, value)
+
+        except ValueError as e:
+            print_error('value')
+            return
+
+
 def print_error(error_type):
     error = "----------------------    ERROR    -------------------------\n"
 
