@@ -144,7 +144,8 @@ def matrix_2_str(matrix):
         return '<empty>'
 
     size = len(matrix), len(matrix[0])
-    output = ['']*size[0]
+    output = ['']*size[1]
+
 
     for j in range(size[1]):
         for i in range(size[0]):
