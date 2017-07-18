@@ -33,7 +33,15 @@ class TestUserCommands(ut.TestCase):
         self.assertTrue(self.empty_img == self.filled_img)
 
     def test_lay_value_at(self):
-        pass
+        pos = 3,2
+        check_img = [['A','Q','E','O'],
+                     ['Z','A','G','I'],
+                     ['O','C','G','E'],
+                     ['Q','Q','Z','E'],
+                     ['Q','T','P','R']]
+
+        lay_value_at(self.filled_img, pos[0]-1, pos[1]-1, 'C')
+        self.assertTrue(self.filled_img == check_img)
 
     def test_vertical_values(self):
         pass
