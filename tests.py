@@ -44,10 +44,38 @@ class TestUserCommands(ut.TestCase):
         self.assertTrue(self.filled_img == check_img)
 
     def test_vertical_values(self):
-        pass
+        col = 4
+        v_pos = 1,3
+        check_img = [['A','Q','E','O'],
+                     ['Z','A','G','I'],
+                     ['O','B','G','E'],
+                     ['C','C','C','E'],
+                     ['Q','T','P','R']]
+
+        vertical_values(self.filled_img,
+                        col-1,
+                        v_pos[0]-1,
+                        v_pos[1]-1,
+                        'C')
+        self.assertTrue(self.filled_img == check_img)
 
     def test_horizontal_values(self):
-        pass
+        row = 4
+        h_pos = 2,5
+
+        check_img = [['A','Q','E','O'],
+                     ['Z','A','G','C'],
+                     ['O','B','G','C'],
+                     ['Q','Q','Z','C'],
+                     ['Q','T','P','C']]
+
+        horizontal_values(self.filled_img,
+                        h_pos[0]-1,
+                        h_pos[1]-1,
+                        row-1,
+                        'C')
+
+        self.assertTrue(self.filled_img == check_img)
 
     def test_key_in_rect(self):
         pass
