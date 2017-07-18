@@ -22,7 +22,7 @@ def lay_value_at(matrix, col, row, value):
 
 
 def vertical_values(matrix, col, row_up, row_down, value):
-        if row_up > row_down:
+    if row_up > row_down:
         return
 
     if not check_horizontal_bounds(matrix, col):
@@ -39,7 +39,7 @@ def vertical_values(matrix, col, row_up, row_down, value):
 
 
 def horizontal_values(matrix, col_left, col_right, row, value):
-        if col_left > col_right:
+    if col_left > col_right:
         return
 
     if not check_horizontal_bounds(matrix, col_left):
@@ -56,7 +56,21 @@ def horizontal_values(matrix, col_left, col_right, row, value):
 
 
 def key_in_rect(matrix, col_top, row_top, col_bottom, row_bottom, value):
-    pass
+    if col_top > col_bottom:
+        return
+
+    if row_top > row_bottom:
+        return
+
+    if not check_bounds(matrix, col_top, row_top):
+        return
+
+    if not check_bounds(matrix, col_bottom, row_bottom):
+        return
+
+    for col in range(col_top, col_bottom+1):
+        for row in range(row_top, row_bottom+1):
+            matrix[col][row] = value
 
 
 def fill_region(matrix, col, row, value):
