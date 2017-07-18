@@ -15,15 +15,44 @@ def clear_matrix(matrix):
 
 
 def lay_value_at(matrix, col, row, value):
-    pass
+    if not check_bounds(matrix, col, row):
+        return
+
+    matrix[col][row] = value
 
 
 def vertical_values(matrix, col, row_up, row_down, value):
-    pass
+        if row_up > row_down:
+        return
+
+    if not check_horizontal_bounds(matrix, col):
+        return
+
+    if not check_vertical_bounds(matrix, row_up):
+        return
+
+    if not check_vertical_bounds(matrix, row_down):
+        return
+
+    for pos in range(row_up, row_down+1):
+        matrix[col][pos] = value
 
 
 def horizontal_values(matrix, col_left, col_right, row, value):
-    pass
+        if col_left > col_right:
+        return
+
+    if not check_horizontal_bounds(matrix, col_left):
+        return
+
+    if not check_horizontal_bounds(matrix, col_right):
+        return
+
+    if not check_vertical_bounds(matrix, row):
+        return
+
+    for pos in range(col_left, col_right+1):
+        matrix[pos][row] = value
 
 
 def key_in_rect(matrix, col_top, row_top, col_bottom, row_bottom, value):
