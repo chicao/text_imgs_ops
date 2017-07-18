@@ -78,7 +78,23 @@ class TestUserCommands(ut.TestCase):
         self.assertTrue(self.filled_img == check_img)
 
     def test_key_in_rect(self):
-        pass
+        top = 2,3
+        bottom = 5,4
+
+        check_img = [['A','Q','E','O'],
+                     ['Z','A','C','C'],
+                     ['O','B','C','C'],
+                     ['Q','Q','C','C'],
+                     ['Q','T','C','C']]
+
+        key_in_rect(self.filled_img,
+                    top[0]-1,
+                    top[1]-1,
+                    bottom[0]-1,
+                    bottom[1]-1,
+                    'C')
+
+        self.assertTrue(self.filled_img == check_img)
 
     def test_fill_region(self):
         pass
