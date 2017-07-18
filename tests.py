@@ -97,7 +97,25 @@ class TestUserCommands(ut.TestCase):
         self.assertTrue(self.filled_img == check_img)
 
     def test_fill_region(self):
-        pass
+        pos = 4,3
+
+        all_filled = [['C','C','C','C'],
+                      ['C','C','C','C'],
+                      ['C','C','C','C'],
+                      ['C','C','C','C'],
+                      ['C','C','C','C']]
+
+        region_filled = [['O','O','O','O'],
+                         ['O','D','A','O'],
+                         ['O','I','I','I'],
+                         ['I','C','C','C'],
+                         ['I','C','C','C']]
+
+        fill_region(self.empty_img, pos[0], pos[1], 'C')
+        self.assertTrue(self.empty_img == all_filled)
+
+        fill_region(self.region_img, pos[0], pos[1], 'C')
+        self.assertTrue(self.region_img == region_filled)
 
     def test_save_matrix(self):
         pass
