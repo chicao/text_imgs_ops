@@ -125,7 +125,7 @@ def save_matrix(matrix, filename):
 
 
 def matrix_2_str(matrix):
-        size = len(matrix), len(matrix[0])
+    size = len(matrix), len(matrix[0])
     output = ['']*size[0]
 
     for j in range(size[1]):
