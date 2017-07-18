@@ -4,11 +4,16 @@
 """
 import sys
 
+image = []
+
 def initialize_matrix(cols, rows):
     return [['O']*rows]*cols
 
 
 def clear_matrix(matrix):
+    if not matrix:
+        return
+
     for col in matrix:
         for pos in range(len(col)):
             col[pos] = 'O'
@@ -125,6 +130,9 @@ def save_matrix(matrix, filename):
 
 
 def matrix_2_str(matrix):
+    if not matrix:
+        return '<empty>'
+
     size = len(matrix), len(matrix[0])
     output = ['']*size[0]
 
@@ -165,6 +173,8 @@ def print_help(initial=False):
                "      positions, both horizontaly and verticaly.\n\n"
                " S 'filename':\n"
                "      Saves the matrix to a file with name 'filename'\n\n"
+               " P:\n"
+               "      Prints the current state of the text image\n\n"
                " X:\n"
                "      Exits the program\n\n"
                "-----------------------------------------------------------\n\n"
@@ -178,7 +188,7 @@ def print_help(initial=False):
 
 def handle_user_input(user_input):
 
-    valid_commands = ['H', 'X', 'I', 'C', 'L', 'V', 'H', 'K', 'F', 'S']
+    valid_commands = ['H', 'X', 'P', 'I', 'C', 'L', 'V', 'H', 'K', 'F', 'S']
     command = user_input.split()
 
     if not command:
@@ -189,6 +199,11 @@ def handle_user_input(user_input):
         print_syntax_error()
         return
 
+    global image
+
+    if command[0] == 'P':
+        print(matrix_2_str(image))
+
     if command[0] == 'H':
         print_help()
 
@@ -196,13 +211,51 @@ def handle_user_input(user_input):
         print("Goodbye :'( ")
         sys.exit(0)
 
+    if command[0] == 'C':
+        if not image:
+            print_error('empty')
 
-def print_syntax_error():
-    error = (
-        "----------------------    ERROR    -------------------------\n"
-        " >  INVALID COMMAND SYNTAX\n"
-        "------------------------------------------------------------\n\n"
-        )
+    if command[0] == 'I':
+
+        if len(command) != 3:
+            print_error('syntax')
+            return
+
+        try:
+            cols = int(command[1])
+            rows = int(command[2])
+            image = initialize_matrix(cols, rows)
+            print(matrix_2_str(image))
+
+        except ValueError as e:
+            print_error('value')
+            return
+
+        return
+
+
+def print_error(error_type):
+    error = "----------------------    ERROR    -------------------------\n"
+
+    if error_type == 'syntax':
+        error += " >  INVALID COMMAND SYNTAX\n"
+
+    elif error_type == 'empty':
+        error +=  (" >  UNITIALIZED IMAGE\n"
+                   " >     This command requires a initialized image\n")
+
+    elif error_type == 'value':
+        error +=  (" > INVALID COMMAND INPUT"
+                   " >     The commands require integer values for image\n"
+                   " >     dimensions input\n")
+
+    else:
+        error += (" >  AN ERROR OCCURRED\n"
+                  " >       Please, keep in mind to use the\n"
+                  "> designated commands\n")
+
+    error += "------------------------------------------------------------\n\n"
+
     print(error)
 
 
