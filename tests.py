@@ -1,6 +1,15 @@
 import unittest as ut
-from letters_valued_image import (initialize_matrix,
-                                 clear_matrix)
+
+from text_image import (initialize_matrix,
+                        clear_matrix,
+                        lay_value_at,
+                        vertical_values,
+                        horizontal_values,
+                        key_in_rect,
+                        fill_region,
+                        save_matrix,
+                        matrix_2_str)
+
 
 class TestUserCommands(ut.TestCase):
     def setUp(self):
@@ -16,6 +25,12 @@ class TestUserCommands(ut.TestCase):
                            ['O','B','G','E'],
                            ['Q','Q','Z','E'],
                            ['Q','T','P','R']]
+
+        self.region_img = [['O','O','O','O'],
+                           ['O','D','A','O'],
+                           ['O','I','I','I'],
+                           ['I','O','O','O'],
+                           ['I','O','O','O']]
 
         self.cols = 5
         self.rows = 4
