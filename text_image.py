@@ -74,7 +74,24 @@ def key_in_rect(matrix, col_top, row_top, col_bottom, row_bottom, value):
 
 
 def fill_region(matrix, col, row, value):
-    pass
+    if matrix[col][row] != 'O':
+        return
+
+    size = len(matrix), len(matrix[0])
+
+    matrix[col][row] = value
+
+    if col > 0:
+        fill_region(matrix, col-1, row, value)
+
+    if row > 0:
+        fill_region(matrix, col, row-1, value)
+
+    if col < size[0]-1:
+        fill_region(matrix, col+1, row, value)
+
+    if row < size[1]-1:
+        fill_region(matrix, col, row+1, value)
 
 
 def save_matrix(matrix, filename):
