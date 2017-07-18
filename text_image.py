@@ -5,11 +5,13 @@
 
 
 def initialize_matrix(cols, rows):
-    pass
+    return [['O']*rows]*cols
 
 
 def clear_matrix(matrix):
-    pass
+    for col in matrix:
+        for pos in range(len(col)):
+            col[pos] = 'O'
 
 
 def lay_value_at(matrix, col, row, value):
