@@ -88,6 +88,7 @@ def handle_user_input(user_input):
     # Splits the string. The arguments must be separated by spaces
     # Commands argument counting and parsing are done ahead
     command = user_input.split()
+    function = command[0]
 
     #
     # User provided a empty string as input and pressed enter
@@ -97,61 +98,77 @@ def handle_user_input(user_input):
 
     #
     # The input wasn't any valid command
-    if command[0] not in valid_commands:
+    if function not in valid_commands:
         print_error('command')
         return
 
     global image
 
-    if command[0] == 'G':
+    if function == 'G':
         print_guide()
+        return
 
-    if command[0] == 'P':
+    if function == 'P':
         print(matrix_2_str(image))
         return
 
-    if command[0] == 'X':
+    if function == 'X':
         print("Goodbye :'( ")
         sys.exit(0)
+        return
 
-    if command[0] == 'I':
-        initialize_zero_valued_img(command)
+    # Initilization command
+    if function == 'I':
+        initialize_zero_valued_img(command[1:])
+        return
 
+    #
+    # The commands below are executed on filled images
+    # If the image wasn't initialized, the other commands
+    # will not work properly. So we block their calls if the
+    # image wasn't initialized
     if not image:
         print_error('empty')
         return
 
-    if command[0] == 'C':
+    # Clear matrix command
+    if function == 'C':
         clear_matrix(image)
 
-    if command[0] == 'L':
-        lay_value_into_image(command)
+    # Lay value at image command
+    if function == 'L':
+        lay_value_into_image(command[1:])
 
-    if command[0] == 'V':
-        vertical_image_filling(command)
+    # Vertical line filling command
+    if function == 'V':
+        vertical_image_filling(command[1:])
 
-    if command[0] == 'H':
-        horizontal_image_filling(command)
+    # Horizontal line filling command
+    if function == 'H':
+        horizontal_image_filling(command[1:])
 
-    if command[0] == 'K':
-        key_rect_in_image(command)
+    # Rectagle filling command
+    if function == 'K':
+        key_rect_in_image(command[1:])
 
-    if command[0] == 'F':
-        fill_image_region(command)
+    # Region filling command
+    if function == 'F':
+        fill_image_region(command[1:])
 
-    if command[0] == 'S':
-        save_image_to_file(command)
+    # Save to file command
+    if function == 'S':
+        save_image_to_file(command[1:])
 
 
-def initialize_zero_valued_img(command):
+def initialize_zero_valued_img(args):
     global image
-    if len(command) != 3:
+    if len(args) != 2:
         print_error('syntax')
         return
 
     try:
-        cols = int(command[1])
-        rows = int(command[2])
+        cols = int(args[0])
+        rows = int(args[1])
         image = initialize_matrix(cols, rows)
 
     except ValueError as e:
@@ -159,20 +176,20 @@ def initialize_zero_valued_img(command):
         return
 
 
-def lay_value_into_image(command):
-    if len(command) != 4:
+def lay_value_into_image(args):
+    if len(args) != 3:
         print_error('syntax')
         return
 
     global image
     try:
-        col = int(command[1]) - 1
-        row = int(command[2]) - 1
+        col = int(args[0]) - 1
+        row = int(args[1]) - 1
 
         if not check_bounds(image, col, row):
             print_error('bounds')
 
-        value = command[3]
+        value = args[2]
         lay_value_at(image, col, row, value)
 
 
@@ -181,16 +198,16 @@ def lay_value_into_image(command):
         return
 
 
-def vertical_image_filling(command):
-    if len(command) != 5:
+def vertical_image_filling(args):
+    if len(args) != 4:
         print_error('syntax')
         return
 
     global image
     try:
-        col = int(command[1]) - 1
-        row_upper = int(command[2]) - 1
-        row_lower = int(command[3]) - 1
+        col = int(args[0]) - 1
+        row_upper = int(args[1]) - 1
+        row_lower = int(args[2]) - 1
 
         if not check_vertical_bounds(image, row_upper):
             print_error('bounds')
@@ -204,7 +221,7 @@ def vertical_image_filling(command):
         if row_upper > row_lower:
             print_error('interval')
 
-        value = command[4]
+        value = args[3]
         vertical_values(image, col, row_upper, row_lower, value)
 
     except ValueError as e:
@@ -212,16 +229,16 @@ def vertical_image_filling(command):
         return
 
 
-def horizontal_image_filling(command):
-    if len(command) != 5:
+def horizontal_image_filling(args):
+    if len(args) != 4:
         print_error('syntax')
         return
 
     global image
     try:
-        col_left = int(command[1]) - 1
-        col_right = int(command[2]) - 1
-        row = int(command[3]) - 1
+        col_left = int(args[0]) - 1
+        col_right = int(args[1]) - 1
+        row = int(args[2]) - 1
 
         if not check_horizontal_bounds(image, col_left):
             print_error('bounds')
@@ -235,7 +252,7 @@ def horizontal_image_filling(command):
         if col_left > col_right:
             print_error('interval')
 
-        value = command[4]
+        value = args[3]
         horizontal_values(image, col_left, col_right, row, value)
 
     except ValueError as e:
@@ -243,18 +260,18 @@ def horizontal_image_filling(command):
         return
 
 
-def key_rect_in_image(command):
-    if len(command) != 6:
+def key_rect_in_image(args):
+    if len(args) != 5:
         print_error('syntax')
         return
 
     global image
     try:
-        col_top = int(command[1]) - 1
-        row_top = int(command[2]) - 1
-        col_bottom = int(command[3]) - 1
-        row_bottom = int(command[4]) - 1
-        value = command[5]
+        col_top = int(args[0]) - 1
+        row_top = int(args[1]) - 1
+        col_bottom = int(args[2]) - 1
+        row_bottom = int(args[3]) - 1
+        value = args[4]
 
         if not check_bounds(image, col_top, row_top):
             print_error('bounds')
@@ -275,16 +292,16 @@ def key_rect_in_image(command):
         return
 
 
-def fill_image_region(command):
-    if len(command) != 4:
+def fill_image_region(args):
+    if len(args) != 3:
         print_error('syntax')
         return
 
     global image
     try:
-        col = int(command[1]) - 1
-        row = int(command[2]) - 1
-        value = command[3]
+        col = int(args[0]) - 1
+        row = int(args[1]) - 1
+        value = args[2]
 
         if not check_bounds(image, col, row):
             print_error('bounds')
@@ -296,27 +313,27 @@ def fill_image_region(command):
         return
 
 
-def save_matrix_to_file(command):
+def save_matrix_to_file(args):
 
-    if len(command) != 2:
+    if len(args) != 1:
         print_error('syntax')
         return
 
     global image
 
-    if "'" not in command[1]:
+    if "'" not in args[0]:
         print_error('syntax')
         return
 
-    if command[1].count("'") != 2:
+    if args[0].count("'") != 2:
         print_error('syntax')
         return
 
-    if len(command[1]) < 3:
+    if len(args[0]) < 3:
         print_error('filename')
         return
 
-    filename = command[1].strip("'")
+    filename = args[0].strip("'")
     save_matrix(image, filename)
 
 
