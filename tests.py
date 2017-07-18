@@ -1,15 +1,6 @@
 import unittest as ut
 
-from text_image import (initialize_matrix,
-                        clear_matrix,
-                        lay_value_at,
-                        vertical_values,
-                        horizontal_values,
-                        key_in_rect,
-                        fill_region,
-                        save_matrix,
-                        matrix_2_str)
-
+from text_processing import *
 
 class TestUserCommands(ut.TestCase):
     def setUp(self):
