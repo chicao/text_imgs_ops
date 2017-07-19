@@ -349,4 +349,4 @@ class TextImage(object):
 
     def __repr__(self):
         """ Representation of the class value"""
-        return "TextImage(cols=%s, rows=%s)" % self.cols, self.rows
+        return "TextImage(cols=%s, rows=%s)" % (self.cols, self.rows)
