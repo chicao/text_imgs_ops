@@ -83,44 +83,44 @@ def handle_user_input(image, user_input):
     # List of valid commands
     valid_commands = ['G', 'X', 'P', 'I', 'C', 'L', 'V', 'H', 'K', 'F', 'S']
 
+
     #
+    # Command related operations
+    #
+
     # Splits the string. The arguments must be separated by spaces
     # Commands argument counting and parsing are done ahead
     command = user_input.split()
-    function = command[0]
 
-    #
     # User provided a empty string as input and pressed enter
     if not command:
-        print('Please, insert a valid command')
+        print_error('command')
         return
 
-    #
+    # Gets the fist splited string, expected to be a valid command
+    function = command[0]
+
     # The input wasn't any valid command
     if function not in valid_commands:
         print_error('command')
         return
 
-    #
     # Print the helping guide
     if function == 'G':
         print_guide()
         return
 
-    #
     # Print the text image
     if function == 'P':
         print(image)
         return
 
-    #
     # Exit the program
     if function == 'X':
         print("Goodbye :'( ")
         sys.exit(0)
         return
 
-    #
     # Initilization command
     if function == 'I':
         initialize_zero_valued_img(image, command[1:])
@@ -386,10 +386,5 @@ def event_loop():
         user_input = input("(press 'G' for guidance)> ")
         handle_user_input(image, user_input)
 
-
-def main():
-    event_loop()
-
-
 if __name__ == '__main__':
-    main()
+    event_loop()
