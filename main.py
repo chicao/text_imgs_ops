@@ -28,30 +28,30 @@ def print_guide(initial=False):
     message = ("-----------------------------------------------------------\n\n"
                " Create a text document as emulation of 2D images\n\n"
                " Usage:\n\n"
-               " G:\n"
+               "    G:\n"
                "      Prints this guide message\n\n"
-               " I M N:\n"
+               "    I M N:\n"
                "      Initialize an empty ('O') MxN ( colsXrows ) image\n\n"
-               " C:\n"
+               "    C:\n"
                "      Sets the current matrix values to zero\n\n"
-               " L X Y C:\n"
+               "    L X Y C:\n"
                "      Set matrix position (X,Y) with value C\n\n"
-               " V X Y1 Y2 C:\n"
+               "    V X Y1 Y2 C:\n"
                "      Sets matrix positions (X, Y1-Y2) with value C\n\n"
-               " H X X1 Y2 C:\n"
+               "    H X X1 Y2 C:\n"
                "      Sets matrix positions (X1-X2, Y) with value C\n\n"
-               " K X1 Y1 X2 Y2 C:\n"
+               "    K X1 Y1 X2 Y2 C:\n"
                "      Sets a rectangular region, with bounds (X1,Y1) for\n"
                "      top-left corner and (X2,Y2) to bottom-right corner\n\n"
-               " F X Y C:\n"
+               "    F X Y C:\n"
                "      Fills a region with value C. A region is defined by the\n"
                "      X,Y position with value C and neighbor zero valued (O)\n"
                "      positions, both horizontaly and verticaly.\n\n"
-               " S 'filename':\n"
+               "    S 'filename':\n"
                "      Saves the matrix to a file with name 'filename'\n\n"
-               " P:\n"
+               "    P:\n"
                "      Prints the current state of the text image\n\n"
-               " X:\n"
+               "    X:\n"
                "      Exits the program\n\n"
                "-----------------------------------------------------------\n\n"
         )
@@ -137,7 +137,7 @@ def handle_user_input(image, user_input):
 
     # Clear matrix command
     if function == 'C':
-        clear_matrix(image)
+        clear_image(image)
 
     # Lay value at image command
     if function == 'L':
@@ -162,6 +162,16 @@ def handle_user_input(image, user_input):
     # Save to file command
     if function == 'S':
         save_image_to_file(image, command[1:])
+
+
+def clear_image(image):
+    """ Handles the user input for the matrix cleaning operation
+
+    Args:
+        image (TextImage): Image to be cleaned
+    """
+
+    image.clear_matrix()
 
 
 def initialize_zero_valued_img(image, args):
@@ -212,15 +222,19 @@ def vertical_image_filling(image, args):
 
         if not image.check_vertical_bounds(row_upper):
             print_error('bounds')
+            return
 
         if not image.check_vertical_bounds(row_lower):
             print_error('bounds')
+            return
 
         if not image.check_horizontal_bounds(col):
             print_error('bounds')
+            return
 
         if row_upper > row_lower:
             print_error('interval')
+            return
 
         value = args[3]
         image.vertical_values(col, row_upper, row_lower, value)
@@ -242,15 +256,19 @@ def horizontal_image_filling(image, args):
 
         if not image.check_horizontal_bounds(col_left):
             print_error('bounds')
+            return
 
         if not image.check_horizontal_bounds(col_right):
             print_error('bounds')
+            return
 
         if not image.check_vertical_bounds(row):
             print_error('bounds')
+            return
 
         if col_left > col_right:
             print_error('interval')
+            return
 
         value = args[3]
         image.horizontal_values(col_left, col_right, row, value)
@@ -274,15 +292,19 @@ def key_rect_in_image(image, args):
 
         if not image.check_bounds(col_top, row_top):
             print_error('bounds')
+            return
 
         if not image.check_bounds(col_bottom, row_bottom):
             print_error('bounds')
+            return
 
         if col_top > col_bottom:
             print_error('interval')
+            return
 
         if row_top > row_bottom:
             print_error('interval')
+            return
 
         image.key_in_rect(col_top, row_top, col_bottom, row_bottom, value)
 
@@ -303,6 +325,7 @@ def fill_image_region(image, args):
 
         if not image.check_bounds(col, row):
             print_error('bounds')
+            return
 
         image.fill_region(col, row, value)
 
@@ -349,23 +372,23 @@ def print_error(error_type):
                    " >     This command requires a initialized image\n")
 
     elif error_type == 'value':
-        error +=  (" > INVALID COMMAND INPUT"
+        error +=  (" > INVALID COMMAND INPUT\n"
                    " >     The commands require integer values for image\n"
                    " >     dimensions input\n")
 
     elif error_type == 'bounds':
-        error +=  (" > INVALID IMAGE BOUNDS"
+        error +=  (" > INVALID IMAGE BOUNDS\n"
                    " >     The commands require integer values for image\n"
                    " >     positions that are with the image size\n")
 
     elif error_type == 'interval':
-        error +=  (" > INVALID IMAGE POSITION INTERVAL"
+        error +=  (" > INVALID IMAGE POSITION INTERVAL\n"
                    " >     The commands require integer values for image\n"
                    " >     positions that required that the first is greater\n"
                    " >     than the second\n")
 
     elif error_type == 'filename':
-        error +=  (" > INVALID FILENAME FORMAT"
+        error +=  (" > INVALID FILENAME FORMAT\n"
                    " >     To save a file properly, input a file name with\n"
                    " >     at least 3 letters\n")
 
