@@ -8,7 +8,7 @@ class TextImage(object):
     def initialize_matrix(self, cols, rows):
         self.cols = cols
         self.rows = rows
-
+        self.image = []
         for _ in range(cols):
             row = ['O' for _ in range(rows)]
             self.image.append(row)
