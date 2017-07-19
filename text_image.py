@@ -312,26 +312,20 @@ class TextImage(object):
         Returns:
             str: Human readable format of the image matrix
         """
-
         if not self.is_image_set():
             return ''
-
-        output = ['']*self.cols
+        output = []
 
         for j in range(self.rows):
+            out = ''
             for i in range(self.cols):
-                output[j] += self.image[i][j]
-            output[j] += '\n'
+                out += self.image[i][j]
+            out += '\n'
+            output.append(out)
 
         return ''.join(output)
 
-    def __str__(self):
-        """ Human readable representation of the class value"""
-        return self.image_2_str()
 
-    def __repr__(self):
-        """ Representation of the class value"""
-        return "TextImage(cols=%s, rows=%s)" % self.cols, self.rows
 
     def save_matrix(self, filename):
         """ Saves the string representation of the image matrix to a file
@@ -349,3 +343,10 @@ class TextImage(object):
         except:
             raise OSError
 
+    def __str__(self):
+        """ Human readable representation of the class value"""
+        return self.image_2_str()
+
+    def __repr__(self):
+        """ Representation of the class value"""
+        return "TextImage(cols=%s, rows=%s)" % self.cols, self.rows
