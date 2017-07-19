@@ -33,7 +33,11 @@ class TextImage(object):
         image (list(list)): a 2d list to instantiate
         cols (int): number of columns to instantiate a empty image
         rows (int): number of rows to instantiate a empty image
+
     Attributes:
+        image (list(list)): a 2d list (matrix) representing the image
+        cols (int): number of columns of the image matrix
+        rows (int): number of rows of the image matrix
 
     """
 
