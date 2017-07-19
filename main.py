@@ -3,9 +3,8 @@
 """ MODULE LEVEL DOCSTRING: WRITE SOMETHING HERE LATER
 """
 import sys
-from text_processing import *
+from text_image import TextImage
 
-image = []
 
 def print_guide(initial=False):
     """ Prints the program guide to the user
@@ -64,7 +63,7 @@ def print_guide(initial=False):
     print(message)
 
 
-def handle_user_input(user_input):
+def handle_user_input(image, user_input):
     """ Handle the user input from the prompt
 
     The user can effectively make operations by calling the correct command
@@ -102,24 +101,29 @@ def handle_user_input(user_input):
         print_error('command')
         return
 
-    global image
-
+    #
+    # Print the helping guide
     if function == 'G':
         print_guide()
         return
 
+    #
+    # Print the text image
     if function == 'P':
-        print(matrix_2_str(image))
+        print(image)
         return
 
+    #
+    # Exit the program
     if function == 'X':
         print("Goodbye :'( ")
         sys.exit(0)
         return
 
+    #
     # Initilization command
     if function == 'I':
-        initialize_zero_valued_img(command[1:])
+        initialize_zero_valued_img(image, command[1:])
         return
 
     #
@@ -127,7 +131,7 @@ def handle_user_input(user_input):
     # If the image wasn't initialized, the other commands
     # will not work properly. So we block their calls if the
     # image wasn't initialized
-    if not image:
+    if not image.image:
         print_error('empty')
         return
 
@@ -137,31 +141,31 @@ def handle_user_input(user_input):
 
     # Lay value at image command
     if function == 'L':
-        lay_value_into_image(command[1:])
+        lay_value_into_image(image, command[1:])
 
     # Vertical line filling command
     if function == 'V':
-        vertical_image_filling(command[1:])
+        vertical_image_filling(image, command[1:])
 
     # Horizontal line filling command
     if function == 'H':
-        horizontal_image_filling(command[1:])
+        horizontal_image_filling(image, command[1:])
 
     # Rectagle filling command
     if function == 'K':
-        key_rect_in_image(command[1:])
+        key_rect_in_image(image, command[1:])
 
     # Region filling command
     if function == 'F':
-        fill_image_region(command[1:])
+        fill_image_region(image, command[1:])
 
     # Save to file command
     if function == 'S':
-        save_image_to_file(command[1:])
+        save_image_to_file(image, command[1:])
 
 
-def initialize_zero_valued_img(args):
-    global image
+def initialize_zero_valued_img(image, args):
+
     if len(args) != 2:
         print_error('syntax')
         return
@@ -169,103 +173,98 @@ def initialize_zero_valued_img(args):
     try:
         cols = int(args[0])
         rows = int(args[1])
-        image = initialize_matrix(cols, rows)
+        image.initialize_matrix(cols, rows)
 
     except ValueError as e:
         print_error('value')
         return
 
 
-def lay_value_into_image(args):
+def lay_value_into_image(image, args):
     if len(args) != 3:
         print_error('syntax')
         return
 
-    global image
     try:
         col = int(args[0]) - 1
         row = int(args[1]) - 1
 
-        if not check_bounds(image, col, row):
+        if not image.check_bounds(col, row):
             print_error('bounds')
 
         value = args[2]
-        lay_value_at(image, col, row, value)
-
+        image.lay_value_at(col, row, value)
 
     except ValueError as e:
         print_error('value')
         return
 
 
-def vertical_image_filling(args):
+def vertical_image_filling(image, args):
     if len(args) != 4:
         print_error('syntax')
         return
 
-    global image
     try:
         col = int(args[0]) - 1
         row_upper = int(args[1]) - 1
         row_lower = int(args[2]) - 1
 
-        if not check_vertical_bounds(image, row_upper):
+        if not image.check_vertical_bounds(row_upper):
             print_error('bounds')
 
-        if not check_vertical_bounds(image, row_lower):
+        if not image.check_vertical_bounds(row_lower):
             print_error('bounds')
 
-        if not check_horizontal_bounds(image, col):
+        if not image.check_horizontal_bounds(col):
             print_error('bounds')
 
         if row_upper > row_lower:
             print_error('interval')
 
         value = args[3]
-        vertical_values(image, col, row_upper, row_lower, value)
+        image.vertical_values(col, row_upper, row_lower, value)
 
     except ValueError as e:
         print_error('value')
         return
 
 
-def horizontal_image_filling(args):
+def horizontal_image_filling(image, args):
     if len(args) != 4:
         print_error('syntax')
         return
 
-    global image
     try:
         col_left = int(args[0]) - 1
         col_right = int(args[1]) - 1
         row = int(args[2]) - 1
 
-        if not check_horizontal_bounds(image, col_left):
+        if not image.check_horizontal_bounds(col_left):
             print_error('bounds')
 
-        if not check_horizontal_bounds(image, col_right):
+        if not image.check_horizontal_bounds(col_right):
             print_error('bounds')
 
-        if not check_vertical_bounds(image, row):
+        if not image.check_vertical_bounds(row):
             print_error('bounds')
 
         if col_left > col_right:
             print_error('interval')
 
         value = args[3]
-        horizontal_values(image, col_left, col_right, row, value)
+        image.horizontal_values(col_left, col_right, row, value)
 
     except ValueError as e:
         print_error('value')
         return
 
 
-def key_rect_in_image(args):
+def key_rect_in_image(image, args):
     if len(args) != 5:
         print_error('syntax')
         return
 
-    global image
     try:
         col_top = int(args[0]) - 1
         row_top = int(args[1]) - 1
@@ -273,10 +272,10 @@ def key_rect_in_image(args):
         row_bottom = int(args[3]) - 1
         value = args[4]
 
-        if not check_bounds(image, col_top, row_top):
+        if not image.check_bounds(col_top, row_top):
             print_error('bounds')
 
-        if not check_bounds(image, col_bottom, row_bottom):
+        if not image.check_bounds(col_bottom, row_bottom):
             print_error('bounds')
 
         if col_top > col_bottom:
@@ -285,41 +284,38 @@ def key_rect_in_image(args):
         if row_top > row_bottom:
             print_error('interval')
 
-        key_in_rect(image, col_top, row_top, col_bottom, row_bottom, value)
+        image.key_in_rect(col_top, row_top, col_bottom, row_bottom, value)
 
     except ValueError as e:
         print_error('value')
         return
 
 
-def fill_image_region(args):
+def fill_image_region(image, args):
     if len(args) != 3:
         print_error('syntax')
         return
 
-    global image
     try:
         col = int(args[0]) - 1
         row = int(args[1]) - 1
         value = args[2]
 
-        if not check_bounds(image, col, row):
+        if not image.check_bounds(col, row):
             print_error('bounds')
 
-        fill_region(image, col, row, value)
+        image.fill_region(col, row, value)
 
     except ValueError as e:
         print_error('value')
         return
 
 
-def save_matrix_to_file(args):
+def save_image_to_file(image, args):
 
     if len(args) != 1:
         print_error('syntax')
         return
-
-    global image
 
     if "'" not in args[0]:
         print_error('syntax')
@@ -334,7 +330,7 @@ def save_matrix_to_file(args):
         return
 
     filename = args[0].strip("'")
-    save_matrix(image, filename)
+    image.save_matrix(filename)
 
 
 def print_error(error_type):
@@ -385,10 +381,10 @@ def print_error(error_type):
 
 def event_loop():
     print_guide(initial=True)
-
+    image = TextImage()
     while True:
         user_input = input("(press 'G' for guidance)> ")
-        handle_user_input(user_input)
+        handle_user_input(image, user_input)
 
 
 def main():
