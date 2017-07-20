@@ -1,3 +1,4 @@
+# -*- coding: utf8 -*-
 """Code for the TextImage class that holds text instance and manipulation
 
 This module holds only the class implementation of the TextImage class. So,
@@ -16,7 +17,7 @@ class TextImage(object):
 
     The matrix start
 
-    However, it is the responsibility of the programmer to assure that
+    However, it is responsibility of the programmer to assure that
     the indexes IN THE CALL are correct. While the user interface deals
     with indexes that start with one, this class deals with the zero indexed
     lists. This makes possible to change the user input interfaces without
@@ -86,10 +87,15 @@ class TextImage(object):
             self.image.append(row)
 
     def clear_matrix(self):
-        """ Set the image matrix to a zero valued ('O') attribute"""
+        """ Set the image matrix to a zero valued ('O') attribute
+
+        Raises:
+            AttributeError: The operation is not possible due to an empty
+                image of the class
+        """
 
         if not self.is_image_set():
-            return
+            raise AttributeError
 
         for i in range(self.cols):
             for j in range(self.rows):
