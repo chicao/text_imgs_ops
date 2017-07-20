@@ -111,7 +111,7 @@ class TextImage(object):
             raise AttributeError
 
         if not self.check_bounds(col, row):
-            return
+            raise IndexError
 
         self.image[col][row] = value
 
