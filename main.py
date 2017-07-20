@@ -266,6 +266,9 @@ def handle_function_calls(image, command, args):
     try:
         args = [int(arg) for arg in args]
 
+        # This flags if it is necessary to do a subtraction operation before
+        # passing the argument, since matrix operations are zero indexed,
+        # while user interface operations aren't
         if function[command]['map_dimension']:
             args = [arg - 1 for arg in args]
 
