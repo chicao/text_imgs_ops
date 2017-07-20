@@ -1,9 +1,60 @@
 # !/usr/bin/python
 # -*- coding: utf8 -*-
-""" MODULE LEVEL DOCSTRING: WRITE SOMETHING HERE LATER
+""" Main program module that handles the event loop and user input
+
+This module holds the main parsing of arguments and operations of the image
+matrix manipulation
+
 """
 import sys
 from text_image import TextImage
+
+
+def print_error(error_type):
+    error = "----------------------    ERROR    -------------------------\n"
+
+    if error_type == 'command':
+        error += (" >  INVALID COMMAND\n"
+                  " >     This input is not a valid command\n")
+
+    elif error_type == 'syntax':
+        error += (" >  INVALID COMMAND SYNTAX\n"
+                  " >     This command requires correct argument values \n"
+                  " >     to proceed\n")
+
+    elif error_type == 'empty':
+        error +=  (" >  UNITIALIZED IMAGE\n"
+                   " >     This command requires a initialized image\n")
+
+    elif error_type == 'value':
+        error +=  (" > INVALID COMMAND INPUT\n"
+                   " >     The commands require integer values for image\n"
+                   " >     dimensions input\n")
+
+    elif error_type == 'bounds':
+        error +=  (" > INVALID IMAGE BOUNDS\n"
+                   " >     The commands require integer values for image\n"
+                   " >     positions that are with the image size\n")
+
+    elif error_type == 'interval':
+        error +=  (" > INVALID IMAGE POSITION INTERVAL\n"
+                   " >     The commands require integer values for image\n"
+                   " >     positions that required that the first is greater\n"
+                   " >     than the second\n")
+
+    elif error_type == 'filename':
+        error +=  (" > INVALID FILENAME FORMAT\n"
+                   " >     To save a file properly, input a file name with\n"
+                   " >     at least 3 letters\n")
+
+    else:
+        error += (" >  AN ERROR OCCURRED\n"
+                  " >       Please, keep in mind to use the\n"
+                  " >       designated commands\n")
+
+    error += "------------------------------------------------------------\n\n"
+
+    print(error)
 
 
 def print_guide(initial=False):
@@ -92,314 +143,151 @@ def handle_user_input(image, user_input):
     # Commands argument counting and parsing are done ahead
     command = user_input.split()
 
-    # User provided a empty string as input and pressed enter
+    # User provided an empty string as input and pressed enter
     if not command:
         print_error('command')
         return
 
     # Gets the fist splited string, expected to be a valid command
+    # and get its related arguments
     function = command[0]
+    args = command[1:]
 
-    # The input wasn't any valid command
+    # The input wasn't identified as any valid command
     if function not in valid_commands:
         print_error('command')
         return
 
+    # Handle the parsing of the arguments
+    handle_function_calls(image, function, args)
+
+
+def handle_function_calls(image, command, args):
+
+    #
+    # Not populated matrix related operations
+    #
+
     # Print the helping guide
-    if function == 'G':
+    if command == 'G':
         print_guide()
         return
 
-    # Print the text image
-    if function == 'P':
-        print(image)
-        return
-
     # Exit the program
-    if function == 'X':
+    if command == 'X':
         print("Goodbye :'( ")
         sys.exit(0)
         return
 
-    # Initilization command
-    if function == 'I':
-        initialize_zero_valued_img(image, command[1:])
+    # Print the text image
+    if command == 'P':
+        print(image)
         return
 
     #
-    # The commands below are executed on filled images
+    # Most of the commands below are executed on filled images
     # If the image wasn't initialized, the other commands
     # will not work properly. So we block their calls if the
     # image wasn't initialized
-    if not image.image:
+    if not image.image and command != 'I':
         print_error('empty')
         return
 
     # Clear matrix command
-    if function == 'C':
-        clear_image(image)
+    if command == 'C':
+        image.clear_matrix()
 
-    # Lay value at image command
-    if function == 'L':
-        lay_value_into_image(image, command[1:])
+    # Handle matrix bound methods of the text image
+    # Each command has a similar way of calling the matrix methods,
+    # such as row and columns position definitions and value settings,
+    # but each one has a particularity, such as method call name, argument
+    # quantity and dimension mapping. So, the following dict handles each
+    # commmand in its particularities
+    function = {
+        'I': {'args':2,
+              'has_value': False,
+              'map_dimension': False,
+              'name': 'initialize_matrix'
+              },
+        'L': {'args':3,
+              'has_value': True,
+              'map_dimension': True,
+              'name': 'lay_value_at'
+              },
+        'V': {'args':4,
+              'has_value': True,
+              'map_dimension': True,
+              'name': 'vertical_values'
+              },
+        'H': {'args':4,
+              'has_value': True,
+              'map_dimension': True,
+              'name': 'horizontal_values'
+              },
+        'K': {'args':5,
+              'has_value': True,
+              'map_dimension': True,
+              'name': 'key_in_rect'
+              },
+        'F': {'args':3,
+              'has_value': True,
+              'map_dimension': True,
+              'name': 'fill_region'
+              },
+        'S': {'args':1,
+              'has_value': True,
+              'map_dimension': False,
+              'name': 'save_matrix'
+              },
+        }
 
-    # Vertical line filling command
-    if function == 'V':
-        vertical_image_filling(image, command[1:])
-
-    # Horizontal line filling command
-    if function == 'H':
-        horizontal_image_filling(image, command[1:])
-
-    # Rectagle filling command
-    if function == 'K':
-        key_rect_in_image(image, command[1:])
-
-    # Region filling command
-    if function == 'F':
-        fill_image_region(image, command[1:])
-
-    # Save to file command
-    if function == 'S':
-        save_image_to_file(image, command[1:])
-
-
-def clear_image(image):
-    """ Handles the user input for the matrix cleaning operation
-
-    Args:
-        image (TextImage): Image to be cleaned
-    """
-
-    image.clear_matrix()
-
-
-def initialize_zero_valued_img(image, args):
-
-    if len(args) != 2:
+    # Check if the number of arguments is correct
+    if len(args) != function[command]['args']:
         print_error('syntax')
         return
 
-    try:
-        cols = int(args[0])
-        rows = int(args[1])
-        image.initialize_matrix(cols, rows)
+    # Separate the value from the argument parsing
+    # Although 'value' is a argument, it isn't manipulated
+    # as the other args, so it is set apart from the others
+    value = ''
 
+    # If the command requires value, it removes it from the argument list
+    if function[command]['has_value']:
+        value = args[-1]
+        args = args[:len(args)-1]
+
+    # Parse the arguments and pass it to the due function
+    try:
+        args = [int(arg) for arg in args]
+
+        if function[command]['map_dimension']:
+            args = [arg - 1 for arg in args]
+
+        method = getattr(image,
+                         function[command]['name'])
+
+        # Reattach value to the argument list
+        if value:
+            args.append(value)
+
+        # Unpack the parsed arguments to the due functions
+        method(*args)
+
+    # Handle expected exceptions raised from the TextImage class
     except ValueError as e:
+        # Raised when parsing string into integers
         print_error('value')
         return
 
-
-def lay_value_into_image(image, args):
-    if len(args) != 3:
-        print_error('syntax')
+    except IndexError as e:
+        # Raised while checing argument bounds in the image matrix
+        print_error('bounds')
         return
 
-    try:
-        col = int(args[0]) - 1
-        row = int(args[1]) - 1
-
-        if not image.check_bounds(col, row):
-            print_error('bounds')
-
-        value = args[2]
-        image.lay_value_at(col, row, value)
-
-    except ValueError as e:
-        print_error('value')
+    except AttributeError as e:
+        # Raised when the attribute matrix is not properly set into the image
+        print_error('empty')
         return
-
-
-def vertical_image_filling(image, args):
-    if len(args) != 4:
-        print_error('syntax')
-        return
-
-    try:
-        col = int(args[0]) - 1
-        row_upper = int(args[1]) - 1
-        row_lower = int(args[2]) - 1
-
-        if not image.check_vertical_bounds(row_upper):
-            print_error('bounds')
-            return
-
-        if not image.check_vertical_bounds(row_lower):
-            print_error('bounds')
-            return
-
-        if not image.check_horizontal_bounds(col):
-            print_error('bounds')
-            return
-
-        if row_upper > row_lower:
-            print_error('interval')
-            return
-
-        value = args[3]
-        image.vertical_values(col, row_upper, row_lower, value)
-
-    except ValueError as e:
-        print_error('value')
-        return
-
-
-def horizontal_image_filling(image, args):
-    if len(args) != 4:
-        print_error('syntax')
-        return
-
-    try:
-        col_left = int(args[0]) - 1
-        col_right = int(args[1]) - 1
-        row = int(args[2]) - 1
-
-        if not image.check_horizontal_bounds(col_left):
-            print_error('bounds')
-            return
-
-        if not image.check_horizontal_bounds(col_right):
-            print_error('bounds')
-            return
-
-        if not image.check_vertical_bounds(row):
-            print_error('bounds')
-            return
-
-        if col_left > col_right:
-            print_error('interval')
-            return
-
-        value = args[3]
-        image.horizontal_values(col_left, col_right, row, value)
-
-    except ValueError as e:
-        print_error('value')
-        return
-
-
-def key_rect_in_image(image, args):
-    if len(args) != 5:
-        print_error('syntax')
-        return
-
-    try:
-        col_top = int(args[0]) - 1
-        row_top = int(args[1]) - 1
-        col_bottom = int(args[2]) - 1
-        row_bottom = int(args[3]) - 1
-        value = args[4]
-
-        if not image.check_bounds(col_top, row_top):
-            print_error('bounds')
-            return
-
-        if not image.check_bounds(col_bottom, row_bottom):
-            print_error('bounds')
-            return
-
-        if col_top > col_bottom:
-            print_error('interval')
-            return
-
-        if row_top > row_bottom:
-            print_error('interval')
-            return
-
-        image.key_in_rect(col_top, row_top, col_bottom, row_bottom, value)
-
-    except ValueError as e:
-        print_error('value')
-        return
-
-
-def fill_image_region(image, args):
-    if len(args) != 3:
-        print_error('syntax')
-        return
-
-    try:
-        col = int(args[0]) - 1
-        row = int(args[1]) - 1
-        value = args[2]
-
-        if not image.check_bounds(col, row):
-            print_error('bounds')
-            return
-
-        image.fill_region(col, row, value)
-
-    except ValueError as e:
-        print_error('value')
-        return
-
-
-def save_image_to_file(image, args):
-
-    if len(args) != 1:
-        print_error('syntax')
-        return
-
-    if "'" not in args[0]:
-        print_error('syntax')
-        return
-
-    if args[0].count("'") != 2:
-        print_error('syntax')
-        return
-
-    if len(args[0]) < 3:
-        print_error('filename')
-        return
-
-    filename = args[0].strip("'")
-    image.save_matrix(filename)
-
-
-def print_error(error_type):
-    error = "----------------------    ERROR    -------------------------\n"
-
-    if error_type == 'command':
-        error += (" >  INVALID COMMAND\n"
-                  " >     This input is not a valid command\n")
-
-    elif error_type == 'syntax':
-        error += (" >  INVALID COMMAND SYNTAX\n"
-                  " >     This command requires arguments to proceed\n")
-
-    elif error_type == 'empty':
-        error +=  (" >  UNITIALIZED IMAGE\n"
-                   " >     This command requires a initialized image\n")
-
-    elif error_type == 'value':
-        error +=  (" > INVALID COMMAND INPUT\n"
-                   " >     The commands require integer values for image\n"
-                   " >     dimensions input\n")
-
-    elif error_type == 'bounds':
-        error +=  (" > INVALID IMAGE BOUNDS\n"
-                   " >     The commands require integer values for image\n"
-                   " >     positions that are with the image size\n")
-
-    elif error_type == 'interval':
-        error +=  (" > INVALID IMAGE POSITION INTERVAL\n"
-                   " >     The commands require integer values for image\n"
-                   " >     positions that required that the first is greater\n"
-                   " >     than the second\n")
-
-    elif error_type == 'filename':
-        error +=  (" > INVALID FILENAME FORMAT\n"
-                   " >     To save a file properly, input a file name with\n"
-                   " >     at least 3 letters\n")
-
-    else:
-        error += (" >  AN ERROR OCCURRED\n"
-                  " >       Please, keep in mind to use the\n"
-                  " >       designated commands\n")
-
-    error += "------------------------------------------------------------\n\n"
-
-    print(error)
 
 
 def event_loop():
@@ -408,6 +296,7 @@ def event_loop():
     while True:
         user_input = input("(press 'G' for guidance)> ")
         handle_user_input(image, user_input)
+
 
 if __name__ == '__main__':
     event_loop()
