@@ -47,6 +47,11 @@ def print_error(error_type):
                    " >     To save a file properly, input a file name with\n"
                    " >     at least 3 letters\n")
 
+    elif error_type == 'file':
+        error +=  (" > SYSTEM ERROR\n"
+                   " >     An error occured while trying to save a file.\n"
+                   " >     Check the file path and access permission\n")
+
     else:
         error += (" >  AN ERROR OCCURRED\n"
                   " >       Please, keep in mind to use the\n"
@@ -287,6 +292,10 @@ def handle_function_calls(image, command, args):
     except AttributeError as e:
         # Raised when the attribute matrix is not properly set into the image
         print_error('empty')
+        return
+    except OSError as e:
+        # Raised when failed to save file due to system issues
+        print_error('file')
         return
 
 
