@@ -11,55 +11,57 @@ from text_image import TextImage
 
 
 def print_error(error_type):
-    error = "----------------------    ERROR    -------------------------\n"
+    """ Print user interaction error messages
 
-    if error_type == 'command':
-        error += (" >  INVALID COMMAND\n"
-                  " >     This input is not a valid command\n")
+    The user should alway receive information of the consequences of its actions
+    within the program. While there is information of success, warning of errors
+    and invalid inputs should be passed
 
-    elif error_type == 'syntax':
-        error += (" >  INVALID COMMAND SYNTAX\n"
-                  " >     This command requires correct argument values \n"
-                  " >     to proceed\n")
+    This function handles error messages by their flagged type.
 
-    elif error_type == 'empty':
-        error +=  (" >  UNITIALIZED IMAGE\n"
-                   " >     This command requires a initialized image\n")
+    Args:
+        error_type (str): Error key to inform the user of possible program
+        misbehaviour due to invalid inputs or unexpected system errors
 
-    elif error_type == 'value':
-        error +=  (" > INVALID COMMAND INPUT\n"
-                   " >     The commands require integer values for image\n"
-                   " >     dimensions input\n")
+    """
 
-    elif error_type == 'bounds':
-        error +=  (" > INVALID IMAGE BOUNDS\n"
-                   " >     The commands require integer values for image\n"
-                   " >     positions that are with the image size\n")
+    errors = {'command': (" >  INVALID COMMAND\n"
+                         " >     This input is not a valid command\n"),
+              'syntax': (" >  INVALID COMMAND SYNTAX\n"
+                         " >     This command requires correct argument\n"
+                         " >     values to proceed\n"),
+              'empty': (" >  INVALID COMMAND\n"
+                        " >     This input is not a valid command\n"),
+              'value': (" > INVALID COMMAND INPUT\n"
+                        " >     The commands require integer values for image\n"
+                        " >     dimensions input\n"),
+              'bounds': (" > INVALID IMAGE BOUNDS\n"
+                         " >     The commands require integer values for\n"
+                         " >     image positions that are with the\n"
+                         " >     image size\n"),
+              'interval': (" > INVALID IMAGE POSITION INTERVAL\n"
+                           " >     The commands require integer values for\n"
+                           " >     image positions that required that the  \n"
+                           " >     first is greater than the second\n"),
+              'filename': (" > INVALID FILENAME FORMAT\n"
+                           " >     To save a file properly, input a file name\n"
+                           " >     with at least 3 letters\n"),
+              'file': (" > SYSTEM ERROR\n"
+                       " >     An error occured while trying to save a file.\n"
+                       " >     Check the file path and access permission\n"),
+              'other': (" >  AN ERROR OCCURRED\n"
+                        " >       Please, keep in mind to use the\n"
+                        " >       designated commands\n"),
+        }
 
-    elif error_type == 'interval':
-        error +=  (" > INVALID IMAGE POSITION INTERVAL\n"
-                   " >     The commands require integer values for image\n"
-                   " >     positions that required that the first is greater\n"
-                   " >     than the second\n")
+    message = errors['other']
+    if error_type in errors:
+        message = errors[error_type]
 
-    elif error_type == 'filename':
-        error +=  (" > INVALID FILENAME FORMAT\n"
-                   " >     To save a file properly, input a file name with\n"
-                   " >     at least 3 letters\n")
+    header = "----------------------    ERROR    -------------------------\n"
+    footer = "------------------------------------------------------------\n\n"
 
-    elif error_type == 'file':
-        error +=  (" > SYSTEM ERROR\n"
-                   " >     An error occured while trying to save a file.\n"
-                   " >     Check the file path and access permission\n")
-
-    else:
-        error += (" >  AN ERROR OCCURRED\n"
-                  " >       Please, keep in mind to use the\n"
-                  " >       designated commands\n")
-
-    error += "------------------------------------------------------------\n\n"
-
-    print(error)
+    print(header + message + footer)
 
 
 def print_guide(initial=False):
@@ -168,9 +170,23 @@ def handle_user_input(image, user_input):
 
 
 def handle_function_calls(image, command, args):
+    """ Handle the argument passing and objet call for command functions
+
+    The commands passed arguments needs to process each input to the
+    due function to be executed. This function figures if the method needs a
+    value, its number of arguments and so on. Basically, it maps, converts and
+    pass the arguments for each command to the TextImage due method
+
+    Args:
+        image (TextImage) : Object representing the image matrix and its
+            functions
+        command (str) : The command the user has input
+        args (list(str)): a list of user input strings that should be the
+            methods arguments
+    """
 
     #
-    # Not populated matrix related operations
+    # Not image related operations
     #
 
     # Print the helping guide
@@ -198,18 +214,25 @@ def handle_function_calls(image, command, args):
         print_error('empty')
         return
 
-    # Clear matrix command
-    if command == 'C':
-        image.clear_matrix()
-        return
-
     # Handle matrix bound methods of the text image
     # Each command has a similar way of calling the matrix methods,
     # such as row and columns position definitions and value settings,
     # but each one has a particularity, such as method call name, argument
     # quantity and dimension mapping. So, the following dict handles each
-    # commmand in its particularities
+    # commmand in its particularities:
+    #
+    #       args : the number of arguments that the function requires
+    #       has_value: specifies the need of a value to be inserted/processed
+    #       map_dimension: flags if should map the passed position to due
+    #                      zero valued bounds
+    #       name: name of the TextImage method to be called with the processed
+    #             arguments
+    #
     function = {
+        'C': {'args':0,
+              'has_value': False,
+              'map_dimension': False,
+              'name': 'clear_matrix'},
         'I': {'args':2,
               'has_value': False,
               'map_dimension': False,
@@ -254,16 +277,17 @@ def handle_function_calls(image, command, args):
 
     # Separate the value from the argument parsing
     # Although 'value' is a argument, it isn't manipulated
-    # as the other args, so it is set apart from the others
+    # as the other args, so it is set apart from the list
     value = ''
 
-    # If the command requires value, it removes it from the argument list
+    # If the command requires value, it removes it from the current args list
     if function[command]['has_value']:
         value = args[-1]
         args = args[:len(args)-1]
 
     # Parse the arguments and pass it to the due function
     try:
+        # Convert the numeric arguments from strings
         args = [int(arg) for arg in args]
 
         # This flags if it is necessary to do a subtraction operation before
@@ -272,6 +296,7 @@ def handle_function_calls(image, command, args):
         if function[command]['map_dimension']:
             args = [arg - 1 for arg in args]
 
+        # Get TextImage method to be executed with its due arguments
         method = getattr(image,
                          function[command]['name'])
 
@@ -279,7 +304,7 @@ def handle_function_calls(image, command, args):
         if value:
             args.append(value)
 
-        # Unpack the parsed arguments to the due functions
+        # Unpack the parsed arguments to the due command function
         method(*args)
 
     # Handle expected exceptions raised from the TextImage class
@@ -304,6 +329,12 @@ def handle_function_calls(image, command, args):
 
 
 def event_loop():
+    """ User interaction loop
+
+    It keeps inside a loop until the user exits the program with a valid 'X'
+    command.
+
+    """
     print_guide(initial=True)
     image = TextImage()
     while True:
