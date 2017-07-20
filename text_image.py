@@ -8,6 +8,7 @@ operations to a matrix reference will simplify coding and avoid bad practices
 such as globals variables declarations.
 """
 
+
 class TextImage(object):
     """ Object that holds a text image matrix and its operations
 
@@ -154,7 +155,6 @@ class TextImage(object):
         for pos in range(row_up, row_down+1):
             self.image[col][pos] = value
 
-
     def horizontal_values(self, col_left, col_right, row, value):
         """ Insert a horizontal line of values from a column to another
 
@@ -245,7 +245,6 @@ class TextImage(object):
         if not self.check_bounds(col, row):
             raise IndexError
 
-
         if self.image[col][row] != 'O':
             return
 
@@ -262,7 +261,6 @@ class TextImage(object):
 
         if row < self.rows - 1:
             self.fill_region(col, row+1, value)
-
 
     def check_bounds(self, col, row):
         """ Checks if the given position is in the image bounds
@@ -282,7 +280,6 @@ class TextImage(object):
 
         return True
 
-
     def check_horizontal_bounds(self, col):
         """ Checks if the given horizontal position is in the image bounds
 
@@ -296,7 +293,6 @@ class TextImage(object):
             return False
 
         return col < self.cols
-
 
     def check_vertical_bounds(self, row):
         """ Checks if the given vertical position is in the image bounds
@@ -330,8 +326,6 @@ class TextImage(object):
             output.append(out)
 
         return ''.join(output)
-
-
 
     def save_matrix(self, filename):
         """ Saves the string representation of the image matrix to a file

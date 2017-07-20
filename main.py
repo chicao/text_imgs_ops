@@ -308,21 +308,21 @@ def handle_function_calls(image, command, args):
         method(*args)
 
     # Handle expected exceptions raised from the TextImage class
-    except ValueError as e:
+    except ValueError:
         # Raised when parsing string into integers
         print_error('value')
         return
 
-    except IndexError as e:
+    except IndexError:
         # Raised while checing argument bounds in the image matrix
         print_error('bounds')
         return
 
-    except AttributeError as e:
+    except AttributeError:
         # Raised when the attribute matrix is not properly set into the image
         print_error('empty')
         return
-    except OSError as e:
+    except OSError:
         # Raised when failed to save file due to system issues
         print_error('file')
         return
