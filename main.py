@@ -201,6 +201,7 @@ def handle_function_calls(image, command, args):
     # Clear matrix command
     if command == 'C':
         image.clear_matrix()
+        return
 
     # Handle matrix bound methods of the text image
     # Each command has a similar way of calling the matrix methods,
