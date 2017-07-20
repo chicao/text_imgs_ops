@@ -1,3 +1,4 @@
+# -*- coding: utf8 -*-
 """ Tests for image matrix operations
 
 The text image processing simulation requires processing of multidimensional
@@ -54,22 +55,71 @@ class TestTextImgManipulations(ut.TestCase):
         tmp_image.rows = self.rows
         self.image = tmp_image
 
-    def tearDown(self):
-        pass
-
     def test_initialize_matrix(self):
+
+        # Test initialize filled matrix
         self.image.initialize_matrix(self.cols, self.rows)
         self.assertTrue(self.image.image == self.empty_img)
 
-    def test_clear_matrix(self):
-        self.image.image = self.filled_img
-        self.image.cols = self.cols
-        self.image.rows = self.rows
+        # Test initialize empty matrix
+        self.image.image = []
+        self.image.initialize_matrix(self.cols, self.rows)
+        self.assertTrue(self.image.image == self.empty_img)
+        self.assertTrue(self.image.cols == self.cols)
+        self.assertTrue(self.image.rows == self.rows)
 
+        #
+        # Test for different dimensions
+
+        # Test for cols == rows
+        cols = 3
+        rows = 3
+
+        check_img = [['O','O','O'],
+                     ['O','O','O'],
+                     ['O','O','O']]
+
+        self.image.initialize_matrix(cols, rows)
+        self.assertTrue(self.image.image == check_img)
+        self.assertTrue(self.image.cols == cols)
+        self.assertTrue(self.image.rows == rows)
+
+        # Test for cols > rows
+        cols = 3
+        rows = 2
+        check_img = [['O','O'],
+                     ['O','O'],
+                     ['O','O']]
+
+        self.image.initialize_matrix(cols, rows)
+        self.assertTrue(self.image.image == check_img)
+        self.assertTrue(self.image.cols == cols)
+        self.assertTrue(self.image.rows == rows)
+
+        # Test for cols < rows
+        cols = 2
+        rows = 3
+        check_img = [['O','O','O'],
+                     ['O','O','O']]
+
+        self.image.initialize_matrix(cols, rows)
+        self.assertTrue(self.image.image == check_img)
+        self.assertTrue(self.image.cols == cols)
+        self.assertTrue(self.image.rows == rows)
+
+    def test_clear_matrix(self):
+        # Test cleaning a filled matrix
         self.image.clear_matrix()
         self.assertTrue(self.image.image == self.empty_img)
 
+        # Test cleaning a empty image
+        with self.assertRaises(AttributeError):
+            self.image.image = []
+            self.image.clear_matrix()
+
     def test_lay_value_at(self):
+
+        # Test value input
         pos = 3,2
         check_img = [['A','Q','E','O'],
                      ['Z','A','G','I'],
@@ -80,8 +130,24 @@ class TestTextImgManipulations(ut.TestCase):
         self.image.lay_value_at(pos[0]-1, pos[1]-1, 'C')
         self.assertTrue(self.filled_img == check_img)
 
+        # Test lay value out of bounds
+        pos = 10, 11
+        with self.assertRaises(IndexError):
+            self.image.lay_value_at(pos[0]-1, pos[1]-1, 'C')
+
+        # Test lay value out of bounds (negative)
+        pos = -10, 0
+        with self.assertRaises(IndexError):
+            self.image.lay_value_at(pos[0]-1, pos[1]-1, 'C')
+
+        # Test lay value into empty matrix
+        with self.assertRaises(AttributeError):
+            pos = 3,2
+            self.image.image = []
+            self.image.lay_value_at(pos[0]-1, pos[1]-1, 'C')
 
     def test_vertical_values(self):
+        # Test vertical value input
         col = 4
         v_pos = 1,3
         check_img = [['A','Q','E','O'],
@@ -96,7 +162,63 @@ class TestTextImgManipulations(ut.TestCase):
                                    'C')
         self.assertTrue(self.image.image == check_img)
 
+        # Test vertical value out of bounds
+        col = 8
+        v_pos = 1, 11
+        with self.assertRaises(IndexError):
+            self.image.vertical_values(col-1,
+                                       v_pos[0]-1,
+                                       v_pos[1]-1,
+                                       'C')
+
+        # Test vertical value out of bounds
+        col = 2
+        v_pos = 6, 11
+        with self.assertRaises(IndexError):
+            self.image.vertical_values(col-1,
+                                       v_pos[0]-1,
+                                       v_pos[1]-1,
+                                       'C')
+
+        # Test vertical value out of bounds (negative)
+        col = -1
+        v_pos = -3, 5
+        with self.assertRaises(IndexError):
+            self.image.vertical_values(col-1,
+                                       v_pos[0]-1,
+                                       v_pos[1]-1,
+                                       'C')
+
+        # Test vertical value invalid interval
+        col = 2
+        v_pos = 3, 1
+        with self.assertRaises(IndexError):
+            self.image.vertical_values(col-1,
+                                       v_pos[0]-1,
+                                       v_pos[1]-1,
+                                       'C')
+
+        # Test vertical value valid negative interval
+        col = 2
+        v_pos = -3, -1
+        with self.assertRaises(IndexError):
+            self.image.vertical_values(col-1,
+                                       v_pos[0]-1,
+                                       v_pos[1]-1,
+                                       'C')
+
+        # Test vertical value into empty matrix
+        with self.assertRaises(AttributeError):
+            col = 3
+            v_pos = 2, 4
+            self.image.image = []
+            self.image.vertical_values(col-1,
+                                       v_pos[0]-1,
+                                       v_pos[1]-1,
+                                       'C')
+
     def test_horizontal_values(self):
+        # Test horizontal value input
         row = 4
         h_pos = 2,5
 
@@ -113,6 +235,62 @@ class TestTextImgManipulations(ut.TestCase):
 
         self.assertTrue(self.image.image == check_img)
 
+
+        # Test horizontal value out of bounds
+        row = 6
+        h_pos = 2,5
+        with self.assertRaises(IndexError):
+            self.image.horizontal_values(h_pos[0]-1,
+                                         h_pos[1]-1,
+                                         row-1,
+                                         'C')
+
+        # Test horizontal value out of bounds
+        row = 4
+        h_pos = 10,12
+        with self.assertRaises(IndexError):
+            self.image.horizontal_values(h_pos[0]-1,
+                                         h_pos[1]-1,
+                                         row-1,
+                                         'C')
+
+        # Test horizontal value out of bounds (negative)
+        row = -3
+        h_pos = -4,-1
+        with self.assertRaises(IndexError):
+            self.image.horizontal_values(h_pos[0]-1,
+                                         h_pos[1]-1,
+                                         row-1,
+                                         'C')
+
+        # Test horizontal value valid negative interval
+        row = 4
+        h_pos = -5,-2
+        with self.assertRaises(IndexError):
+            self.image.horizontal_values(h_pos[0]-1,
+                                         h_pos[1]-1,
+                                         row-1,
+                                         'C')
+
+        # Test horizontal value invalid interval
+        row = 4
+        h_pos = 5,2
+        with self.assertRaises(IndexError):
+            self.image.horizontal_values(h_pos[0]-1,
+                                         h_pos[1]-1,
+                                         row-1,
+                                         'C')
+
+        # Test horizontal value into empty matrix
+        with self.assertRaises(AttributeError):
+            row = 4
+            h_pos = 2,5
+            self.image.image = []
+            self.image.horizontal_values(h_pos[0]-1,
+                                         h_pos[1]-1,
+                                         row-1,
+                                         'C')
+
     def test_key_in_rect(self):
         top = 2,3
         bottom = 5,4
@@ -124,14 +302,57 @@ class TestTextImgManipulations(ut.TestCase):
                      ['Q','T','C','C']]
 
         self.image.key_in_rect(top[0]-1,
-                                top[1]-1,
-                                bottom[0]-1,
-                                bottom[1]-1,
-                                'C')
+                               top[1]-1,
+                               bottom[0]-1,
+                               bottom[1]-1,
+                               'C')
 
         self.assertTrue(self.image.image == check_img)
 
+        # Test top out of bounds
+        top = 4, 8
+        bottom = 3, 4
+        with self.assertRaises(IndexError):
+            self.image.key_in_rect(top[0]-1,
+                                   top[1]-1,
+                                   bottom[0]-1,
+                                   bottom[1]-1,
+                                   'C')
+
+        # Test bottom value out of bounds
+        top = 1, 1
+        bottom = 10,14
+        with self.assertRaises(IndexError):
+            self.image.key_in_rect(top[0]-1,
+                                   top[1]-1,
+                                   bottom[0]-1,
+                                   bottom[1]-1,
+                                   'C')
+
+        # Test values out of bounds (negative)
+        top = 5, -5
+        bottom = -22, 2
+        with self.assertRaises(IndexError):
+            self.image.key_in_rect(top[0]-1,
+                                   top[1]-1,
+                                   bottom[0]-1,
+                                   bottom[1]-1,
+                                   'C')
+
+        # Test rectangle creation into empty matrix
+        with self.assertRaises(AttributeError):
+            row = 4
+            h_pos = 2,5
+            self.image.image = []
+            self.image.key_in_rect(top[0]-1,
+                                   top[1]-1,
+                                   bottom[0]-1,
+                                   bottom[1]-1,
+                                   'C')
+
     def test_fill_region(self):
+
+        # Test fill regions
         pos = 4,3
 
         all_filled = [['C','C','C','C'],
@@ -146,19 +367,41 @@ class TestTextImgManipulations(ut.TestCase):
                          ['I','C','C','C'],
                          ['I','C','C','C']]
 
+        # Test fill empty matrix
         self.image.image = self.empty_img
-
         self.image.fill_region(pos[0],
                                pos[1],
                                'C')
         self.assertTrue(self.image.image == all_filled)
 
-
+        # Test fill subregion matrix
         self.image.image = self.region_img
         self.image.fill_region(pos[0],
                                pos[1],
                                'C')
         self.assertTrue(self.image.image == region_filled)
+
+        # Test fill out of bounds
+        with self.assertRaises(IndexError):
+            pos = 5,5
+            self.image.fill_region(pos[0],
+                                   pos[1],
+                                   'C')
+
+        # Test fill out of bounds (negative)
+        with self.assertRaises(IndexError):
+            pos = -2,-10
+            self.image.fill_region(pos[0],
+                                   pos[1],
+                                   'C')
+
+        # Test fill empty matrix
+        with self.assertRaises(AttributeError):
+            pos = 4,3
+            self.image.image = []
+            self.image.fill_region(pos[0],
+                                   pos[1],
+                                   'C')
 
     def test_matrix_2_str(self):
         converted = ('AZOQQ\n'
